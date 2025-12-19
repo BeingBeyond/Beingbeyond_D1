@@ -1,0 +1,35 @@
+name: "being_d1"
+robotAssetFile: "beingbeyond_d1/robot_right_hand_fix_head.urdf"
+arm_dof_names: ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"]
+palm_link: "hand_base_link"
+fingertips_link: ["thumb_tip", "index_tip", "middle_tip", "ring_tip", "pinky_tip"]
+passive_joints:
+  thumb_ip:
+    mimic: "thumb_cmc_pitch"
+    multiplier: 1.83
+  index_dip:
+    mimic: "index_mcp_pitch"
+    multiplier: 0.89
+  middle_dip:
+    mimic: "middle_mcp_pitch"
+    multiplier: 0.89
+  ring_dip:
+    mimic: "ring_mcp_pitch"
+    multiplier: 0.89
+  pinky_dip:
+    mimic: "pinky_mcp_pitch"
+    multiplier: 0.89
+eef_link: "ee"
+num_arm_dofs: 6
+palm_offset: [0, 0, 0.05]
+default_dof_pos: [0, -0.3, 0.3, 0, 0.8, 0, 0,0,0,0,0,0,0,0,0,0,0]
+num_obs_dict:
+  "armdof": 6
+  "handdof": 6
+  "eefpose": 7
+  "ftpos": 15
+  "palmpose": 7
+  "handposerror": 6
+  "lastact": 13
+  "objpose": 7
+numActions: 13

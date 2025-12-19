@@ -1,0 +1,372 @@
+{
+    "task": {
+        "name": "grasp",
+        "physics_engine": "${..physics_engine}",
+        "hand_config": "${..hand}",
+        "env": {
+            "numEnvs": "${resolve_default:16384,${...num_envs}}",
+            "envSpacing": 1.2,
+            "episodeLength": 300,
+            "randomEpisodeLength": false,
+            "enableDebugVis": false,
+            "aggregateMode": 1,
+            "useRobotVhacd": false,
+            "useObjectVhacd": true,
+            "enableSelfCollision": false,
+            "objectFriction": 1.0,
+            "clipObservations": 5.0,
+            "clipActions": 1.0,
+            "deltaActionScale": [
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "resetPositionRange": [
+                [
+                    0.2,
+                    0.4
+                ],
+                [
+                    -0.1,
+                    0.1
+                ],
+                [
+                    0.05,
+                    0.05
+                ]
+            ],
+            "resetRandomRot": "random",
+            "tableHeightRange": [
+                0.0,
+                0.0
+            ],
+            "resetDofPosRandomInterval": 0.0,
+            "useRelativeControl": false,
+            "armController": "qpos",
+            "actionsMovingAverage": 0.1,
+            "actionsMaxAngVelArm": 1.57,
+            "actionsMaxAngVelHand": 6.28,
+            "controlFrequencyInv": 1,
+            "observationType": "armdof+handdof+eefpose+ftpos+lastact+objpose",
+            "enablePointCloud": false,
+            "pointsPerObject": 512,
+            "asset": {
+                "assetRoot": "../assets/",
+                "objectAssetFile": "ycb/011_banana.urdf"
+            }
+        },
+        "task": {
+            "randomize": false,
+            "randomization_params": {
+                "frequency": 720,
+                "observations": {
+                    "range": [
+                        0,
+                        0.002
+                    ],
+                    "range_correlated": [
+                        0,
+                        0.001
+                    ],
+                    "operation": "additive",
+                    "distribution": "gaussian"
+                },
+                "actions": {
+                    "range": [
+                        0.0,
+                        0.001
+                    ],
+                    "range_correlated": [
+                        0,
+                        0.015
+                    ],
+                    "operation": "additive",
+                    "distribution": "gaussian"
+                },
+                "sim_params": {
+                    "gravity": {
+                        "range": [
+                            0,
+                            0.4
+                        ],
+                        "operation": "additive",
+                        "distribution": "gaussian"
+                    }
+                },
+                "actor_params": {
+                    "hand": {
+                        "color": true,
+                        "dof_properties": {
+                            "damping": {
+                                "range": [
+                                    0.3,
+                                    3.0
+                                ],
+                                "operation": "scaling",
+                                "distribution": "loguniform"
+                            },
+                            "stiffness": {
+                                "range": [
+                                    0.75,
+                                    1.5
+                                ],
+                                "operation": "scaling",
+                                "distribution": "loguniform"
+                            },
+                            "lower": {
+                                "range": [
+                                    0,
+                                    0.01
+                                ],
+                                "operation": "additive",
+                                "distribution": "gaussian"
+                            },
+                            "upper": {
+                                "range": [
+                                    0,
+                                    0.01
+                                ],
+                                "operation": "additive",
+                                "distribution": "gaussian"
+                            }
+                        },
+                        "rigid_body_properties": {
+                            "mass": {
+                                "range": [
+                                    0.5,
+                                    1.5
+                                ],
+                                "operation": "scaling",
+                                "distribution": "uniform",
+                                "setup_only": true
+                            }
+                        },
+                        "rigid_shape_properties": {
+                            "friction": {
+                                "num_buckets": 250,
+                                "range": [
+                                    0.7,
+                                    1.3
+                                ],
+                                "operation": "scaling",
+                                "distribution": "uniform"
+                            }
+                        }
+                    },
+                    "object": {
+                        "scale": {
+                            "range": [
+                                0.95,
+                                1.05
+                            ],
+                            "operation": "scaling",
+                            "distribution": "uniform",
+                            "setup_only": true
+                        },
+                        "rigid_body_properties": {
+                            "mass": {
+                                "range": [
+                                    0.5,
+                                    1.5
+                                ],
+                                "operation": "scaling",
+                                "distribution": "uniform",
+                                "setup_only": true
+                            }
+                        },
+                        "rigid_shape_properties": {
+                            "friction": {
+                                "num_buckets": 250,
+                                "range": [
+                                    0.7,
+                                    1.3
+                                ],
+                                "operation": "scaling",
+                                "distribution": "uniform"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "sim": {
+            "dt": 0.01667,
+            "substeps": 2,
+            "up_axis": "z",
+            "use_gpu_pipeline": "${eq:${...pipeline},\"gpu\"}",
+            "gravity": [
+                0.0,
+                0.0,
+                -9.81
+            ],
+            "physx": {
+                "num_threads": "${....num_threads}",
+                "solver_type": "${....solver_type}",
+                "use_gpu": "${contains:\"cuda\",${....sim_device}}",
+                "num_position_iterations": 8,
+                "num_velocity_iterations": 0,
+                "max_gpu_contact_pairs": 8388608,
+                "num_subscenes": "${....num_subscenes}",
+                "contact_offset": 0.002,
+                "rest_offset": 0.0,
+                "bounce_threshold_velocity": 0.2,
+                "max_depenetration_velocity": 1000,
+                "default_buffer_size_multiplier": 5.0,
+                "contact_collection": 0
+            }
+        }
+    },
+    "train": {
+        "params": {
+            "name": "ppo",
+            "log_dir": "./runs_ppo",
+            "policy": {
+                "backbone_type": "",
+                "freeze_backbone": false,
+                "pi_hid_sizes": [
+                    1024,
+                    1024,
+                    512,
+                    512
+                ],
+                "vf_hid_sizes": [
+                    1024,
+                    1024,
+                    512,
+                    512
+                ],
+                "activation": "elu"
+            },
+            "test": "${...test}",
+            "resume": 0,
+            "save_interval": 500,
+            "print_log": true,
+            "max_iterations": 10000,
+            "cliprange": 0.2,
+            "ent_coef": 0,
+            "nsteps": 8,
+            "noptepochs": 5,
+            "nminibatches": 4,
+            "max_grad_norm": 1,
+            "optim_stepsize": 0.0003,
+            "schedule": "adaptive",
+            "desired_kl": 0.016,
+            "gamma": 0.96,
+            "lam": 0.95,
+            "init_noise_std": 0.8
+        }
+    },
+    "hand": {
+        "name": "being_d1",
+        "robotAssetFile": "beingbeyond_d1/robot_right_hand_fix_head.urdf",
+        "arm_dof_names": [
+            "joint_1",
+            "joint_2",
+            "joint_3",
+            "joint_4",
+            "joint_5",
+            "joint_6"
+        ],
+        "palm_link": "hand_base_link",
+        "fingertips_link": [
+            "thumb_tip",
+            "index_tip",
+            "middle_tip",
+            "ring_tip",
+            "pinky_tip"
+        ],
+        "passive_joints": {
+            "thumb_ip": {
+                "mimic": "thumb_cmc_pitch",
+                "multiplier": 1.83
+            },
+            "index_dip": {
+                "mimic": "index_mcp_pitch",
+                "multiplier": 0.89
+            },
+            "middle_dip": {
+                "mimic": "middle_mcp_pitch",
+                "multiplier": 0.89
+            },
+            "ring_dip": {
+                "mimic": "ring_mcp_pitch",
+                "multiplier": 0.89
+            },
+            "pinky_dip": {
+                "mimic": "pinky_mcp_pitch",
+                "multiplier": 0.89
+            }
+        },
+        "eef_link": "ee",
+        "num_arm_dofs": 6,
+        "palm_offset": [
+            0,
+            0,
+            0.05
+        ],
+        "default_dof_pos": [
+            0,
+            -0.3,
+            0.3,
+            0,
+            0.8,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "num_obs_dict": {
+            "armdof": 6,
+            "handdof": 6,
+            "eefpose": 7,
+            "ftpos": 15,
+            "palmpose": 7,
+            "handposerror": 6,
+            "lastact": 13,
+            "objpose": 7
+        },
+        "numActions": 13
+    },
+    "task_name": "${task.name}",
+    "experiment": "",
+    "num_envs": 8192,
+    "seed": 42,
+    "torch_deterministic": false,
+    "max_iterations": "",
+    "physics_engine": "physx",
+    "pipeline": "gpu",
+    "sim_device": "cuda:0",
+    "rl_device": "cuda:0",
+    "graphics_device_id": 0,
+    "num_threads": 4,
+    "solver_type": 1,
+    "num_subscenes": 4,
+    "test": false,
+    "test_expert": false,
+    "checkpoint": "",
+    "sigma": "",
+    "multi_gpu": false,
+    "capture_video": false,
+    "capture_video_freq": 1464,
+    "capture_video_len": 100,
+    "force_render": true,
+    "headless": false
+}
