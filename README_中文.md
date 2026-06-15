@@ -73,14 +73,33 @@ ls /dev/ttyUSB*
 
 期望看到：`/dev/ttyUSB0` 或 `/dev/ttyUSB1`.
 
-### 3.2 若出现 “permission denied（权限拒绝）”
+### 3.2 若串口无法打开
+
+如果看到类似错误：
 
 ```bash
-groups
-sudo usermod -a -G dialout $USER
+RuntimeError: Failed to open port /dev/ttyUSB0
 ```
 
-登出并重新登录。
+请检查串口权限：
+
+```bash
+ls -l /dev/ttyUSB0
+groups
+```
+
+如果 `/dev/ttyUSB0` 属于 `dialout` 组，但当前用户不在 `dialout` 组中，执行：
+
+```bash
+sudo usermod -aG dialout $USER
+```
+
+然后登出并重新登录，或者执行：
+
+```bash
+newgrp dialout
+```
+
 
 ---
 

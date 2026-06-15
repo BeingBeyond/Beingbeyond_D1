@@ -71,15 +71,33 @@ ls /dev/ttyUSB*
 ```
 Expected: `/dev/ttyUSB0` or `/dev/ttyUSB1`.
 
+### 3.2 If the serial port cannot be opened
 
-### 3.2 If you get “permission denied”
+If you see an error like:
 
 ```bash
-groups
-sudo usermod -a -G dialout $USER
+RuntimeError: Failed to open port /dev/ttyUSB0
 ```
 
-Log out and re-login.
+check the serial port permission:
+
+```bash
+ls -l /dev/ttyUSB0
+groups
+```
+
+If `/dev/ttyUSB0` belongs to the `dialout` group but your user is not in `dialout`, run:
+
+```bash
+sudo usermod -aG dialout $USER
+```
+
+Then log out and log back in, or run:
+
+```bash
+newgrp dialout
+```
+
 
 ---
 
